@@ -32,6 +32,16 @@ public class PlanetaController {
         return planetaRepository.findById(id).orElse(null);
     }
 
+    @GetMapping("/clima/{clima}")
+    public List<Planeta> buscarPorClima(@PathVariable String clima){
+        return planetaRepository.findByClimaContainingIgnoreCase(clima);
+    }
+
+    @GetMapping("/terreno/{terreno}")
+    public List<Planeta> buscarPorTerreno(@PathVariable String terreno){
+        return planetaRepository.findByTerrenoContainingIgnoreCase(terreno);
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removerPorId(@PathVariable Long id){
