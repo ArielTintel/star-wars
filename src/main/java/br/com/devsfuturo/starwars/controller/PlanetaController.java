@@ -18,7 +18,7 @@ public class PlanetaController {
 
     @GetMapping
     public List<Planeta> listar(){
-        return (List<Planeta>) planetaRepository.findAll();
+        return (List<Planeta>) planetaRepository.findByOrderByNomeAsc();
     }
 
     @PostMapping
