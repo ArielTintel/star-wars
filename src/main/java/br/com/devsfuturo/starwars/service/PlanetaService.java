@@ -3,6 +3,8 @@ package br.com.devsfuturo.starwars.service;
 import br.com.devsfuturo.starwars.model.Planeta;
 import br.com.devsfuturo.starwars.repository.PlanetaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -14,10 +16,12 @@ public class PlanetaService {
     @Autowired //inicializar variavel
     private PlanetaRepository planetaRepository;
 
+    @Cacheable("planetas")
     public List<Planeta> listar(){
         return (List<Planeta>) planetaRepository.findByOrderByNomeAsc();
     }
 
+    @CacheEvict(value = "planetas", allEntries = true )
     public Planeta criar( Planeta planeta){
         return planetaRepository.save(planeta);
     }
@@ -34,10 +38,12 @@ public class PlanetaService {
         return planetaRepository.findByTerrenoContainingIgnoreCase(terreno);
     }
 
+    @CacheEvict(value = "planetas", allEntries = true )
     public void removerPorId( Long id){
         planetaRepository.deleteById(id);
     }
 
+    @CacheEvict(value = "planetas", allEntries = true )
     public void atualizar(Planeta planeta, Long id) throws Exception {
         Planeta planetaDB = planetaRepository.findById(id).orElse(null);
 
