@@ -2,52 +2,62 @@ package br.com.devsfuturo.starwars.controller;
 
 import br.com.devsfuturo.starwars.model.Planeta;
 import br.com.devsfuturo.starwars.repository.PlanetaRepository;
+import br.com.devsfuturo.starwars.service.PlanetaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("planeta") //Declaração de Rota (EndPoint)
 public class PlanetaController {
 
     @Autowired //inicializar variavel
-    private PlanetaRepository planetaRepository;
+    private PlanetaService planetaService;
 
     @GetMapping
     public List<Planeta> listar(){
-        return (List<Planeta>) planetaRepository.findAll();
+        return (List<Planeta>) planetaService.listar();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Planeta criar(@RequestBody Planeta planeta){
-       return planetaRepository.save(planeta);
+       return planetaService.criar(planeta);
     }
 
     @GetMapping("/{id}")
     public Planeta consultarPorId(@PathVariable Long id){
-        return planetaRepository.findById(id).orElse(null);
+        return planetaService.consultarPorId(id);
+    }
+
+    @GetMapping("/clima/{clima}")
+    public List<Planeta> buscarPlanetaPorClima(@PathVariable String clima){
+        return planetaService.buscarPlanetaPorClima(clima);
+    }
+
+    @GetMapping("/terreno/{terreno}")
+    public List<Planeta> buscarPlanetaPorTerreno(@PathVariable String terreno){
+        return planetaService.buscarPlanetaPorTerreno(terreno);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removerPorId(@PathVariable Long id){
-        planetaRepository.deleteById(id);
+        planetaService.removerPorId(id);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void atualizar(@RequestBody Planeta planeta,@PathVariable Long id) {
-        Planeta planetaDB = planetaRepository.findById(id).orElse(null);
+        try {
+            planetaService.atualizar(planeta, id);
+        } catch (Exception e) {
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
 
-       planetaDB.setTerreno(planeta.getTerreno());
-       planetaDB.setClima(planeta.getClima());
-       planetaDB.setNome(planeta.getNome());
-
-        planetaRepository.save(planetaDB);
     }
 
 
