@@ -1,7 +1,7 @@
 package br.com.devsfuturo.starwars.controller;
 
+import br.com.devsfuturo.starwars.dto.PlanetaDto;
 import br.com.devsfuturo.starwars.model.Planeta;
-import br.com.devsfuturo.starwars.repository.PlanetaRepository;
 import br.com.devsfuturo.starwars.service.PlanetaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,8 +24,8 @@ public class PlanetaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Planeta criar(@RequestBody Planeta planeta){
-       return planetaService.criar(planeta);
+    public PlanetaDto criar(@RequestBody PlanetaDto planetaDto){
+       return planetaService.criar(planetaDto);
     }
 
     @GetMapping("/{id}")
