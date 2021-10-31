@@ -1,13 +1,16 @@
 package br.com.devsfuturo.starwars.service;
 
+import br.com.devsfuturo.starwars.dto.PlanetaDto;
 import br.com.devsfuturo.starwars.model.Planeta;
 import br.com.devsfuturo.starwars.repository.PlanetaRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -16,17 +19,26 @@ public class PlanetaService {
     @Autowired //inicializar variavel
     private PlanetaRepository planetaRepository;
 
+    @Autowired
+    ModelMapper modelMapper;
+
     @Cacheable("planetas")
     public List<Planeta> listar(){
         return (List<Planeta>) planetaRepository.findByOrderByNomeAsc();
     }
 
     @CacheEvict(value = "planetas", allEntries = true )
-    public Planeta criar( Planeta planeta){
-        return planetaRepository.save(planeta);
+    public PlanetaDto criar( PlanetaDto planetaDto){
+        Planeta planeta = modelMapper.map(planetaDto, Planeta.class);
+        planeta.setDataCriacao(LocalDate.now());
+        planeta.setDataAlteracao(LocalDate.now());
+        planeta = planetaRepository.save(planeta);
+        PlanetaDto planetaDtoRetorno = modelMapper.map(planeta, PlanetaDto.class);
+        return planetaDtoRetorno;
     }
 
     public Planeta consultarPorId( Long id){
+
         return planetaRepository.findById(id).orElse(null);
     }
 
